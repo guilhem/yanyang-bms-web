@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f2f5f7">
+  <title data-i18n="Yanyang BMS Web · Lecteur Bluetooth pour batterie NIU">Yanyang BMS Web · Lecteur Bluetooth pour batterie NIU</title>
+  <meta name="description" content="Consultez votre BMS Yanyang (YYBMS) en Web Bluetooth : tensions, cellules, charge et températures. Lecteur indépendant testé sur batterie NIU." data-i18n-content="Consultez votre BMS Yanyang (YYBMS) en Web Bluetooth : tensions, cellules, charge et températures. Lecteur indépendant testé sur batterie NIU.">
+  <link rel="stylesheet" href="./styles.css?v=yybms-b-2">
+  <script type="module" src="./app.js?v=yybms-b-2"></script>
+</head>
+<body>
+  <a class="skip-link" href="#dashboard" data-i18n="Aller aux mesures">Aller aux mesures</a>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">Y</span><div><h1 id="page-title">Yanyang BMS Web</h1><p data-i18n="Batterie NIU / YYBMS">Batterie NIU / YYBMS</p></div></div>
+      <div class="masthead-actions"><span class="badge muted" data-i18n="Lecture seule">Lecture seule</span>
+        <label class="sr-only" for="language" data-i18n="Langue">Langue</label>
+        <select id="language"><option value="fr" lang="fr">Français</option><option value="en" lang="en">English</option><option value="zh-CN" lang="zh-CN">简体中文</option></select>
+      </div>
+    </header>
+
+    <section class="connection-controls" aria-labelledby="connection-title">
+      <div class="connection-status"><h2 id="connection-title">Bluetooth</h2><span id="connection-state" class="badge muted" tabindex="-1">Déconnecté</span></div>
+      <form id="connect-form" novalidate><button id="connect" type="submit" aria-describedby="bluetooth-support">Choisir un appareil</button></form>
+      <button id="read" type="button" disabled hidden>Lire la batterie</button>
+      <button id="disconnect" type="button" class="quiet" disabled hidden data-i18n="Déconnecter">Déconnecter</button>
+    </section>
+    <div class="connection-options">
+      <p id="bluetooth-support" class="help"></p>
+      <div class="disclosures">
+        <details id="service-options" class="connect-options">
+          <summary><span class="summary-label" data-i18n="Dépannage">Dépannage</span> <span data-i18n="Service personnalisé">Service personnalisé</span></summary>
+          <p id="service-help" class="help" data-i18n="Facultatif. Laissez vide pour utiliser le service FFE0 du BMS étudié. Si ce service est introuvable, indiquez celui de votre BMS.">Facultatif. Laissez vide pour utiliser le service FFE0 du BMS étudié. Si ce service est introuvable, indiquez celui de votre BMS.</p>
+          <label for="service-uuid" data-i18n="UUID complet du service Bluetooth">UUID complet du service Bluetooth</label>
+          <input id="service-uuid" form="connect-form" name="service" type="text" autocomplete="off" spellcheck="false" maxlength="36" placeholder="12345678-1234-1234-1234-123456789abc" aria-describedby="service-help">
+        </details>
+        <details class="reading-help">
+          <summary data-i18n="À propos de la lecture">À propos de la lecture</summary>
+          <p class="help" data-i18n="La connexion seule ne lance aucune lecture. Un clic lit cinq blocs successivement : les mesures du cycle ne sont pas atomiques. Aucune lecture, reconnexion ou répétition automatique. Un délai dépassé ferme la connexion.">La connexion seule ne lance aucune lecture. Un clic lit cinq blocs successivement : les mesures du cycle ne sont pas atomiques. Aucune lecture, reconnexion ou répétition automatique. Un délai dépassé ferme la connexion.</p>
+          <p class="help" data-i18n="Profil YYBMS B, validé sur le modèle étudié. Les mesures affichées conservent la provenance de leur cycle.">Profil YYBMS B, validé sur le modèle étudié. Les mesures affichées conservent la provenance de leur cycle.</p>
+        </details>
+        <details id="import-options" class="import-panel">
+          <summary id="sources-title" data-i18n="Importer un relevé">Importer un relevé</summary>
+          <label for="import" data-i18n="Fichier JSON">Fichier JSON</label>
+          <input id="import" type="file" accept=".json,application/json" aria-describedby="import-help">
+          <p id="import-help" class="help" data-i18n="Importer ferme la connexion et remplace le relevé précédent, même si le fichier est invalide. Maximum 1 Mio (1 048 576 octets). Décodage local uniquement : le fichier n’est envoyé ni à un serveur ni à la batterie.">Importer ferme la connexion et remplace le relevé précédent, même si le fichier est invalide. Maximum 1 Mio (1 048 576 octets). Décodage local uniquement : le fichier n’est envoyé ni à un serveur ni à la batterie.</p>
+        </details>
+      </div>
+    </div>
+
+    <p id="message" class="message" role="status" aria-live="polite" tabindex="-1">Choisissez un appareil, puis lisez la batterie. Vous pouvez aussi importer un relevé.</p>
+
+    <section id="dashboard" class="dashboard" aria-labelledby="dashboard-title" tabindex="-1">
+      <div class="section-heading dashboard-heading"><h2 id="dashboard-title" data-i18n="Relevé de la batterie">Relevé de la batterie</h2><button id="export-cycle" type="button" class="quiet" disabled hidden data-i18n="Exporter le relevé">Exporter le relevé</button></div>
+      <div class="provenance"><span id="source-badge" class="badge muted">Aucune source</span><p id="provenance" class="help">Aucune donnée chargée.</p></div>
+      <div id="empty" class="empty"><h3 data-i18n="Prêt pour votre premier relevé">Prêt pour votre premier relevé</h3><p data-i18n="Connectez le BMS, puis choisissez « Lire la batterie ». Un fichier JSON permet aussi de consulter une capture.">Connectez le BMS, puis choisissez « Lire la batterie ». Un fichier JSON permet aussi de consulter une capture.</p></div>
+      <div id="measurements" hidden>
+        <div class="metrics">
+          <article class="metric charge-metric"><p data-i18n="Charge estimée">Charge estimée</p><strong id="soc">—</strong><meter id="soc-meter" min="0" max="100" value="0" aria-label="Charge estimée" data-i18n-aria-label="Charge estimée" hidden></meter><small id="capacity">—</small></article>
+          <article class="metric"><p data-i18n="Tension du pack">Tension du pack</p><strong id="voltage">—</strong><small id="energy">Tension du cycle</small></article>
+          <article class="metric"><p data-i18n="Courant">Courant</p><strong id="current">—</strong><small id="power">—</small></article>
+          <article class="metric"><p data-i18n="Écart entre cellules">Écart entre cellules</p><strong id="spread">—</strong><small id="cell-range">—</small></article>
+        </div>
+        <div class="side-panels">
+          <section class="card" aria-labelledby="temperature-title">
+            <h3 id="temperature-title" data-i18n="Températures">Températures</h3>
+            <ul id="temperatures" class="temperatures"></ul><dl id="temperature-range" class="facts"></dl>
+            <details class="protocol-notes"><summary data-i18n="À propos des sondes">À propos des sondes</summary><p class="help" data-i18n="Jusqu’à huit sondes batterie. Les valeurs invalides restent indisponibles ; MOS et équilibrage sont séparés.">Jusqu’à huit sondes batterie. Les valeurs invalides restent indisponibles ; MOS et équilibrage sont séparés.</p></details>
+          </section>
+          <section class="card" aria-labelledby="status-title"><h3 id="status-title" data-i18n="État et alertes">État et alertes</h3><dl id="status" class="facts"></dl><ul id="warnings" class="warnings"></ul></section>
+        </div>
+        <details class="card cells-panel">
+          <summary><span id="cells-title" data-i18n="Tensions des cellules">Tensions des cellules</span> <span id="cell-count" class="badge muted">—</span></summary>
+          <p class="help" data-i18n="Jusqu’à 25 cellules. Tensions décodées et équilibrage indiqué par le BMS.">Jusqu’à 25 cellules. Tensions décodées et équilibrage indiqué par le BMS.</p>
+          <div class="table-scroll" tabindex="0" role="region" aria-labelledby="cells-title"><table><caption class="sr-only" data-i18n="Tension et équilibrage de chaque cellule">Tension et équilibrage de chaque cellule</caption><thead><tr><th scope="col" data-i18n="Cellule">Cellule</th><th scope="col" data-i18n="Tension">Tension</th><th scope="col" data-i18n="Équilibrage">Équilibrage</th></tr></thead><tbody id="cells"></tbody></table></div>
+        </details>
+        <section class="information" aria-labelledby="information-title">
+          <div class="section-heading"><h3 id="information-title" data-i18n="Détails techniques">Détails techniques</h3></div>
+          <details class="card info-panel">
+            <summary data-i18n="Charge, autonomie et apprentissage">Charge, autonomie et apprentissage</summary>
+            <dl id="capacity-details" class="facts identity-grid"></dl>
+            <details class="protocol-notes"><summary data-i18n="À propos de ces valeurs">À propos de ces valeurs</summary><p class="help" data-i18n="Le SOC principal conserve la valeur brute entre 0 et 100 %. Une conversion secondaire est affichée séparément : 85 devient 84,8 %. Les durées sont des estimations. Énergie et électricité cumulée restent brutes ; leur unité n’est pas confirmée.">Le SOC principal conserve la valeur brute entre 0 et 100 %. Une conversion secondaire est affichée séparément : 85 devient 84,8 %. Les durées sont des estimations. Énergie et électricité cumulée restent brutes ; leur unité n’est pas confirmée.</p></details>
+          </details>
+          <details class="card info-panel">
+            <summary data-i18n="Seuils de protection">Seuils de protection</summary>
+            <dl id="protection-details" class="facts identity-grid"></dl>
+            <details class="protocol-notes"><summary data-i18n="À propos de ces valeurs">À propos de ces valeurs</summary><p class="help" data-i18n="Seuils et valeurs de reprise du profil YYBMS B. Les limites thermiques distinguent charge et décharge. Les seuils secondaires du pack et le seuil MOS restent bruts, sans unité supposée. Le registre de surintensité secondaire conserve sa valeur convertie, sans unité confirmée.">Seuils et valeurs de reprise du profil YYBMS B. Les limites thermiques distinguent charge et décharge. Les seuils secondaires du pack et le seuil MOS restent bruts, sans unité supposée. Le registre de surintensité secondaire conserve sa valeur convertie, sans unité confirmée.</p></details>
+          </details>
+          <details class="card info-panel">
+            <summary data-i18n="Équilibrage des cellules">Équilibrage des cellules</summary>
+            <dl id="balancing-details" class="facts identity-grid"></dl>
+            <details class="protocol-notes"><summary data-i18n="À propos de ces valeurs">À propos de ces valeurs</summary><p class="help" data-i18n="Paramètres d’équilibrage lus dans le cycle. Le registre R143 reste brut, car son interprétation est incertaine. Le tableau des cellules détaille les états signalés.">Paramètres d’équilibrage lus dans le cycle. Le registre R143 reste brut, car son interprétation est incertaine. Le tableau des cellules détaille les états signalés.</p></details>
+          </details>
+          <details class="card info-panel">
+            <summary data-i18n="Mesure du courant et calibration">Mesure du courant et calibration</summary>
+            <dl id="calibration-details" class="facts identity-grid"></dl>
+            <details class="protocol-notes"><summary data-i18n="À propos de ces valeurs">À propos de ces valeurs</summary><p class="help" data-i18n="Deux mesures par shunt : gains et offsets signés de 16 bits, affichés bruts sans échelle supposée. Aucun réglage de calibration n’est effectué.">Deux mesures par shunt : gains et offsets signés de 16 bits, affichés bruts sans échelle supposée. Aucun réglage de calibration n’est effectué.</p></details>
+          </details>
+          <details class="card info-panel">
+            <summary data-i18n="Veille, réveil et communication">Veille, réveil et communication</summary>
+            <dl id="communication-details" class="facts identity-grid"></dl>
+            <details class="protocol-notes"><summary data-i18n="À propos de ces valeurs">À propos de ces valeurs</summary><p class="help" data-i18n="Les délais de veille restent bruts, car leur unité est incertaine. Protocoles, débits et réveil sont affichés en codes bruts ; aucun paramètre n’est modifié.">Les délais de veille restent bruts, car leur unité est incertaine. Protocoles, débits et réveil sont affichés en codes bruts ; aucun paramètre n’est modifié.</p></details>
+          </details>
+          <details class="card info-panel">
+            <summary data-i18n="Diagnostic système">Diagnostic système</summary>
+            <dl id="system-details" class="facts identity-grid"></dl>
+            <details class="protocol-notes"><summary data-i18n="À propos de ces valeurs">À propos de ces valeurs</summary><p class="help" data-i18n="États et alarmes conservent leurs masques de 32 bits. Les contacts de charge et de décharge indiquent un état actif, sans déduire une autorisation. Aucun reset ni changement de configuration.">États et alarmes conservent leurs masques de 32 bits. Les contacts de charge et de décharge indiquent un état actif, sans déduire une autorisation. Aucun reset ni changement de configuration.</p></details>
+          </details>
+        </section>
+        <details class="card identity">
+          <summary id="identity-title" data-i18n="Identité du BMS">Identité du BMS</summary>
+          <dl id="identity" class="facts identity-grid"></dl>
+          <details class="protocol-notes"><summary data-i18n="À propos du champ fabricant">À propos du champ fabricant</summary><p class="help" data-i18n="Le champ fabricant est conservé comme texte brut : son chevauchement avec des paramètres empêche de garantir un numéro de série.">Le champ fabricant est conservé comme texte brut : son chevauchement avec des paramètres empêche de garantir un numéro de série.</p></details>
+        </details>
+      </div>
+    </section>
+
+    <details class="card diagnostics">
+      <summary><span class="summary-label" data-i18n="Journal de diagnostic">Journal de diagnostic</span> <span id="event-count">0 / 500 événements</span></summary>
+      <p class="help" data-i18n="UUID, propriétés GATT, octets et erreurs horodatés. Les cycles et journaux exportés contiennent les octets bruts du BMS, pouvant inclure des identifiants et des codes privés : relisez-les avant de les partager.">UUID, propriétés GATT, octets et erreurs horodatés. Les cycles et journaux exportés contiennent les octets bruts du BMS, pouvant inclure des identifiants et des codes privés : relisez-les avant de les partager.</p>
+      <button id="export-log" type="button" class="quiet" data-i18n="Exporter le journal JSON">Exporter le journal JSON</button>
+      <pre id="journal" role="region" tabindex="0" aria-label="Journal de diagnostic" data-i18n-aria-label="Journal de diagnostic">Aucun événement Bluetooth.</pre>
+    </details>
+    <footer data-i18n="Lecteur indépendant pour BMS Yanyang. Aucune modification de paramètres, aucun reset ni firmware.">Lecteur indépendant pour BMS Yanyang. Aucune modification de paramètres, aucun reset ni firmware.</footer>
+  </main>
+</body>
+</html>

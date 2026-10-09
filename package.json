@@ -1,0 +1,17 @@
+{
+  "name": "yanyang-bms-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8765 --bind 127.0.0.1 --directory web",
+    "test": "node --test --test-isolation=none tests/*.test.js",
+    "sync-i18next": "node scripts/sync-i18next.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "i18next": "26.4.2"
+  }
+}

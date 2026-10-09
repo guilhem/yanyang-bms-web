@@ -1,0 +1,10 @@
+
+/node_modules/
+/.tools/
+/.agents/
+/.codex/
+/analysis/
+/sites/
+/dotnet-tools.json
+/skills-lock.json
+__pycache__/
